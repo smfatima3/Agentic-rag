@@ -1,0 +1,18 @@
+# FILE: requirements.txt
+# ACTION: Update your requirements file with these new libraries.
+
+fastapi
+uvicorn[standard]
+python-multipart
+Pillow
+datasets
+sentence-transformers
+faiss-cpu
+numpy
+huggingface_hub 
+langchain
+langchain-community
+transformers
+torch
+accelerate
+bitsandbytes
