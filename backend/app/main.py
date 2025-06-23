@@ -4,11 +4,9 @@ from fastapi.staticfiles import StaticFiles # Import this
 from app.api import endpoints
 import uvicorn
 
-app = FastAPI(
-    title="Multi-Agent Shopping Assistant API",
-    description="An API for a team of AI agents that help you find the perfect product.",
-    version="1.0.0"
-)
+
+# Serve static React build
+app.mount("/", StaticFiles(directory="frontend/build", html=True), name="frontend")
 
 # CORS Middleware
 origins = ["*"] # Allow all origins for now
