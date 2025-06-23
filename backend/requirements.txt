@@ -9,10 +9,9 @@ datasets
 sentence-transformers
 faiss-cpu
 numpy
-huggingface_hub 
-langchain
-langchain-community
 transformers
 torch
 accelerate
 bitsandbytes
+einops
+tiktoken
