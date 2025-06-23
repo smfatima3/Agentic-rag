@@ -1,4 +1,4 @@
-rom transformers import AutoModelForCausalLM, AutoProcessor
+from transformers import AutoModelForCausalLM, AutoProcessor
 from PIL import Image
 import torch
 import os
