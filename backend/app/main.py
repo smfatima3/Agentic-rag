@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles # Import this
 from app.api import endpoints
 import uvicorn
 
@@ -19,15 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the router from our endpoints file
-app.include_router(endpoints.router, prefix="/api", tags=["Agents"])
+# Include the API router
+app.include_router(endpoints.router, prefix="/api")
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Multi-Agent Shopping Assistant API!"}
-
-# Note: The visual QA endpoint has been removed for now and will be
-# reintroduced in Phase 3 with the Product Research Agent.
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# --- THIS IS THE NEW PART ---
+# This will serve the static files from the React build folder
+# It must come *after* the API router
+app.mount("/", StaticFiles(directory="frontend/build", html=True), name="static")
