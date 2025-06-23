@@ -11,7 +11,7 @@ class ProductResearchAgent:
         This uses 4-bit quantization to reduce memory usage.
         Requires a GPU and a Hugging Face token.
         """
-        print("Initializing Product Research Agent with Cohere Aya Vision...")
+        print("Initializing Product Research Agent...")
 
         # Load the Hugging Face token securely from Kaggle secrets
         try:
@@ -24,7 +24,7 @@ class ProductResearchAgent:
             self.processor = None
             return
 
-        self.model_id = "CohereForAI/aya-23-8B"
+        self.model_id = "liuhaotian/llava-v1.5-7b"
 
         # Check for GPU
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
