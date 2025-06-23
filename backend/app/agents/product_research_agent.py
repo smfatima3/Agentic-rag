@@ -1,7 +1,4 @@
-# FILE: backend/app/agents/product_research_agent.py
-# ACTION: Replace this file's content entirely.
-
-from transformers import AutoModelForCausalLM, AutoProcessor
+rom transformers import AutoModelForCausalLM, AutoProcessor
 from PIL import Image
 import torch
 import os
