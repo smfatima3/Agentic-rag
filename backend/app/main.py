@@ -1,15 +1,19 @@
+# In backend/app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles # Import this
+from fastapi.staticfiles import StaticFiles # <--- IMPORT THIS
 from app.api import endpoints
-import uvicorn
+import os # <--- IMPORT THIS
 
+app = FastAPI(
+    title="Multi-Agent Shopping Assistant API",
+    description="An API for a team of AI agents that help you find the perfect product.",
+    version="1.0.0"
+)
 
-# Serve static React build
-app.mount("/", StaticFiles(directory="frontend/build", html=True), name="frontend")
-
-# CORS Middleware
-origins = ["*"] # Allow all origins for now
+# You can keep your CORS settings
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -18,10 +22,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the API router
+# This includes your /api/get-recommendation endpoint
 app.include_router(endpoints.router, prefix="/api")
 
-# --- THIS IS THE NEW PART ---
-# This will serve the static files from the React build folder
-# It must come *after* the API router
-app.mount("/", StaticFiles(directory="frontend/build", html=True), name="static")
+# --- THIS IS THE CRUCIAL NEW PART ---
+# This line serves the built React app from the 'frontend/build' directory.
+# It MUST come *after* your API router.
+app.mount("/", StaticFiles(directory="/kaggle/working/Agentic-rag/frontend/build", html=True), name="static")
