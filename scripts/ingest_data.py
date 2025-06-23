@@ -1,8 +1,10 @@
 # FILE: scripts/ingest_data.py
 # ACTION: Replace your existing file with this code.
-# REASON: This version reads data from your local Parquet file instead of
-#         downloading it from Hugging Face, making it much faster and more reliable.
+# REASON: This reverts to downloading data directly from Hugging Face,
+#         which is more reliable in the Kaggle network environment and
+#         solves the "No images could be processed" error.
 
+import datasets
 import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
@@ -11,65 +13,61 @@ import json
 from PIL import Image
 import requests
 from io import BytesIO
-import pandas as pd # Import pandas
 
 def setup_rag_pipeline():
     """
-    Reads the local Parquet file, creates embeddings using the CLIP model,
+    Downloads the dataset from Hugging Face, creates embeddings using the CLIP model,
     and saves the FAISS index and corresponding data.
     """
-    print("--- Starting RAG pipeline setup from local Parquet file ---")
+    print("--- Starting RAG pipeline setup with CLIP model from Hugging Face ---")
 
     # --- Use the correct CLIP model ---
     print("Loading CLIP model: clip-ViT-B-32")
     model = SentenceTransformer('clip-ViT-B-32')
 
-    # 1. Load the dataset from the local Parquet file
-    parquet_path = "/kaggle/input/data-for-this-project/shopping_queries_dataset_products.parquet"
-    print(f"Loading dataset from: {parquet_path}")
-    
-    if not os.path.exists(parquet_path):
-        print(f"FATAL ERROR: The specified Parquet file was not found at {parquet_path}")
-        print("Please ensure your Kaggle notebook has this dataset added as an input.")
-        return # Exit the script if the data is not found
+    # 1. Load the dataset from Hugging Face
+    print("Loading dataset: crossingminds/shopping-queries-image-dataset")
+    # This dataset contains the image URLs
+    try:
+        ds = datasets.load_dataset("crossingminds/shopping-queries-image-dataset", "product_image_urls")
+        product_data = ds['train']
+    except Exception as e:
+        print(f"FATAL ERROR: Could not download dataset from Hugging Face: {e}")
+        print("Please ensure internet access is enabled in your Kaggle notebook settings.")
+        return
 
-    df = pd.read_parquet(parquet_path)
-    
-    # Convert dataframe to a list of dictionaries, which is easier to work with
-    product_data = df.to_dict('records')
-    print(f"Loaded {len(product_data)} products from the Parquet file.")
-
-    # For demonstration, you can still use a subset if the file is very large
-    # sample_size = 5000
-    # product_data = product_data[:sample_size]
-    # print(f"Using a sample of {len(product_data)} products.")
+    # For demonstration, we'll use a smaller, manageable subset to run quickly.
+    sample_size = 5000 # Increased sample size for a richer dataset
+    product_data = product_data.select(range(sample_size))
+    print(f"Using a sample of {sample_size} products.")
 
     # 2. Create the embeddings from images
     print("Generating image embeddings using CLIP (this may take a while)...")
     
     embeddings = []
-    valid_products = [] # We will only keep products where the image could be processed
+    valid_products = [] # We will only keep products where the image was successfully downloaded
 
     for item in product_data:
-        # Assuming the column name for the image URL is 'image_url'
         image_url = item.get('image_url')
         if not image_url:
             continue
         try:
+            # Download the image
             response = requests.get(image_url, timeout=10)
-            response.raise_for_status()
+            response.raise_for_status() # Raise an exception for bad status codes
             img = Image.open(BytesIO(response.content))
             
+            # Encode the image
             embedding = model.encode([img])[0]
             embeddings.append(embedding)
             valid_products.append(item)
 
-        except Exception as e:
+        except (requests.exceptions.RequestException, IOError, OSError) as e:
             # Skip images that fail to download or process
             continue
 
     if not embeddings:
-        print("Error: No images could be processed. Please check image URLs and network access. Aborting.")
+        print("Error: No images could be processed. Aborting.")
         return
 
     embeddings = np.array(embeddings)
@@ -94,7 +92,7 @@ def setup_rag_pipeline():
     with open(data_path, 'w', encoding='utf-8') as f:
         json.dump(valid_products, f)
 
-    print("--- RAG pipeline setup from local file complete! ---")
+    print("--- RAG pipeline setup from Hugging Face complete! ---")
 
 if __name__ == "__main__":
     setup_rag_pipeline()
