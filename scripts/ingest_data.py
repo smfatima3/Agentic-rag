@@ -1,7 +1,7 @@
 # FILE: scripts/ingest_data.py
 # ACTION: Replace your existing file with this code.
-# REASON: This adds a line to convert all images to 'RGB' mode,
-#         which fixes the ValueError caused by grayscale images in the dataset.
+# REASON: This adds 'ValueError' to the try...except block, making the script
+#         robust by simply skipping any image that causes the channel dimension error.
 
 import datasets
 import numpy as np
@@ -39,6 +39,7 @@ def setup_rag_pipeline():
     
     embeddings = []
     valid_products = []
+    skipped_count = 0
 
     for item in product_data:
         image_url = item.get('image_url')
@@ -49,21 +50,26 @@ def setup_rag_pipeline():
             response.raise_for_status()
             img = Image.open(BytesIO(response.content))
             
-            # --- THIS IS THE FIX ---
-            # Ensure the image is in RGB format (3 channels)
             img = img.convert("RGB")
             
+            # --- THIS IS THE FIX ---
+            # The model.encode() call is now inside the try...except block
+            # to catch ValueErrors from problematic images.
             embedding = model.encode([img])[0]
+            
             embeddings.append(embedding)
             valid_products.append(item)
 
-        except (requests.exceptions.RequestException, IOError, OSError) as e:
+        except (requests.exceptions.RequestException, IOError, OSError, ValueError) as e:
+            # If any error occurs (download, file format, or value error), skip this image.
+            skipped_count += 1
             continue
 
     if not embeddings:
-        print("Error: No images could be processed. Aborting.")
+        print("Error: No images could be processed at all. Aborting.")
         return
 
+    print(f"Total images skipped due to errors: {skipped_count}")
     embeddings = np.array(embeddings)
     print(f"Embeddings created successfully with shape: {embeddings.shape}")
 
