@@ -15,3 +15,7 @@ accelerate
 bitsandbytes
 einops
 tiktoken
+nest-asyncio 
+pyngrok
+pandas
+pyarrow
