@@ -18,7 +18,7 @@ class ProductResearchAgent:
     """
     An AI Agent that uses Qwen-VL to conduct deep analysis of product images.
     """
-    def __init__(self, model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
+    def __init__(self, model_id="Qwen/Qwen2.5-VL-3B-Instruct"):
         self.model_id = model_id
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = None
