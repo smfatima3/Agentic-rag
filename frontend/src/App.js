@@ -115,78 +115,58 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">AI Shopping Squad</h1>
-          <p className="text-lg text-gray-600 mt-2">Upload a product image and your preferences to get a collaborative AI-powered recommendation.</p>
-        </header>
-
+    <div className="min-h-screen bg-gray-100 font-sans">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold leading-tight text-gray-900">AI Shopping Squad</h1>
+        </div>
+      </header>
+      
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Left Column: Inputs */}
-          <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-            <h2 className="text-2xl font-semibold mb-4">Your Preferences</h2>
-            <form id="analysis-form">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Query</label>
-                  <input type="text" value={query} onChange={e => setQuery(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                </div>
-                <div className="flex space-x-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Product Price ($)</label>
-                    <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Your Budget ($)</label>
-                    <input type="number" value={userBudget} onChange={e => setUserBudget(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                  </div>
-                </div>
+          {/* --- LEFT COLUMN: THE BRIEFING --- */}
+          <div className="lg:col-span-1">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Your Product Briefing</h2>
+              <form id="analysis-form" className="space-y-4">
+                {/* ... (Your input fields for query, price, budget go here) ... */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Product Image</label>
-                  <div className="mt-1 flex items-center space-x-4">
-                     {imagePreview && <img src={imagePreview} alt="Preview" className="h-16 w-16 rounded-md object-cover" />}
-                     <input type="file" onChange={handleImageChange} accept="image/*" className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"/>
-                  </div>
+                  {/* ... (Your image upload input goes here) ... */}
+                  {imagePreview && <img src={imagePreview} alt="Preview" className="mt-2 rounded-lg shadow-md w-full h-auto" />}
                 </div>
-              </div>
-              <button type="button" onClick={handleGetRecommendation} disabled={isAnalyzing} className="mt-6 w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400">
-                {isAnalyzing ? 'Analyzing...' : 'Get Recommendation'}
-              </button>
-            </form>
+                <button type="button" onClick={handleGetRecommendation} disabled={isAnalyzing} className="w-full ...">
+                  {isAnalyzing ? 'Analyzing...' : 'Assemble the Squad'}
+                </button>
+              </form>
+            </div>
           </div>
 
-          {/* Right Column: Agents & Results */}
-          <div className="lg:col-span-2">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* --- RIGHT COLUMN: THE ANALYSIS PANEL --- */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Agent Roundtable */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Agent Analysis</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Agent name="Review Analyzer" status={agentStates.ReviewAnalyzer.status} output={agentStates.ReviewAnalyzer.output} />
-                <Agent name="Product Researcher" status={agentStates.ProductResearcher.status} output={agentStates.ProductResearcher.output} />
-                <Agent name="Price-Quality Agent" status={agentStates.PriceQuality.status} output={agentStates.PriceQuality.output} />
+                <Agent name="Visual Analyst" status={agentStates.ProductResearcher.status} output={agentStates.ProductResearcher.output} />
+                <Agent name="Price & Quality" status={agentStates.PriceQuality.status} output={agentStates.PriceQuality.output} />
                 <Agent name="Budget Advisor" status={agentStates.BudgetAdvisor.status} output={agentStates.BudgetAdvisor.output} />
+              </div>
             </div>
+
+            {/* Final Recommendation Report */}
             {finalRecommendation && !isAnalyzing && (
-                <div className="mt-8 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Final Recommendation: {finalRecommendation.title}</h2>
-                    <div className="space-y-4 text-gray-700">
-                        <div>
-                            <h3 className="font-semibold">Visual Summary:</h3>
-                            <p>{finalRecommendation.visual_summary}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Value Assessment:</h3>
-                            <p>{finalRecommendation.value_assessment}</p>
-                        </div>
-                         <div>
-                            <h3 className="font-semibold">Budget Advice:</h3>
-                            <p>{finalRecommendation.budget_advice}</p>
-                        </div>
-                    </div>
-                </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Final Recommendation: {finalRecommendation.title}</h2>
+                {/* ... (Display the final pros, cons, and summary here) ... */}
+              </div>
             )}
           </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }
