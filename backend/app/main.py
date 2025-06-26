@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles # Important for serving the frontend
+from fastapi.staticfiles import StaticFiles
 from app.api import endpoints
 import os
 
@@ -12,7 +12,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Your CORS settings are fine. This allows your frontend to talk to your backend.
+# Your CORS settings
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -22,17 +22,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- THIS IS THE CHANGE ---
-# The prefix="/api" has been removed.
-# This makes your API endpoint directly accessible at /research-product/
-# which matches the change we made to your frontend app.js
-app.include_router(endpoints.router)
 
-# This line serves the built React app. It should come AFTER your API routes.
-# The path should point to the 'build' directory of your frontend.
-# Make sure the path is correct for your server environment.
-# Note: For Kaggle, this path might be different. 
-# For a local setup, this assumes the backend is run from the project's root directory.
+app.include_router(endpoints.router, prefix="/api")
+
+# This serves your frontend app. This part is correct and should come last.
 frontend_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "build")
 if not os.path.exists(frontend_dir):
     print(f"WARNING: Frontend directory not found at {frontend_dir}. Static file serving will fail.")
