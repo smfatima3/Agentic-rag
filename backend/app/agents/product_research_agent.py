@@ -6,20 +6,16 @@ import os
 class ProductResearchAgent:
     def __init__(self):
         """
-        Initializes the agent with the Qwen/Qwen2.5-VL-3B-Instruct model.
+        Initializes the agent with the Qwen-VL model.
+        Assumes Hugging Face login is handled externally.
         """
         print("Initializing Product Research Agent with Qwen-VL...")
-        
-        if 'HF_TOKEN' not in os.environ:
-            print("WARNING: Hugging Face token (HF_TOKEN) not found.")
-            self.model = self.processor = None
-            return
-
         self.model_id = "Qwen/Qwen2.5-VL-3B-Instruct"
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
 
         try:
+            # The login should be handled before this agent is initialized.
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
                 torch_dtype=torch.bfloat16,
@@ -29,7 +25,8 @@ class ProductResearchAgent:
             self.processor = AutoProcessor.from_pretrained(self.model_id, trust_remote_code=True)
             print("Product Research Agent (Qwen-VL) initialized successfully.")
         except Exception as e:
-            print(f"Failed to load Qwen-VL model: {e}")
+            print(f"FATAL ERROR: Failed to load Qwen-VL model: {e}")
+            print("This may be due to a missing Hugging Face login or network issues.")
             self.model = self.processor = None
 
     def analyze_image(self, image: Image.Image, prompt: str):
