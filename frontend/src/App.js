@@ -56,10 +56,10 @@ function App() {
 
     // --- THIS IS THE CHANGE ---
     // Use a relative path so it calls the same server that serves the page.
-    fetch('/api/get-recommendation', {
-      method: 'POST',
-      body: formData,
-    })
+    fetch('/research-product/', { // <-- THIS IS THE ONLY CHANGE
+     method: 'POST',
+     body: formData,
+   })
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
