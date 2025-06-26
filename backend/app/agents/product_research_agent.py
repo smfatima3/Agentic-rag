@@ -127,39 +127,4 @@ class ProductResearchAgent:
 
         return analysis
 
-# =================================================================
-# Example Usage
-# =================================================================
-if __name__ == "__main__":
-    # Initialize the agent
-    # This will download and load the model, which may take some time and memory.
-    try:
-        product_agent = ProductResearchAgent()
 
-        # --- Example 1: Research a specific product ---
-        # Let's use an image of a running shoe
-        shoe_image_url = "https://images.pexels.com/photos/1032110/pexels-photo-1032110.jpeg"
-        
-        query1 = (
-            "As a product research agent, analyze this shoe. "
-            "Describe its key features, material, and target audience. "
-            "What are its potential strengths and weaknesses in the market?"
-        )
-        
-        analysis_result = product_agent.analyze_product(shoe_image_url, query1)
-        
-        print("\n--- 📝 Product Analysis Report ---")
-        print(analysis_result)
-        
-        # --- Example 2: Comparative question ---
-        query2 = (
-            "Based on the visual design, which competing brands does this shoe most resemble? "
-            "Mention specific design cues like the sole pattern, upper mesh, and overall silhouette."
-        )
-
-        comparative_analysis = product_agent.analyze_product(shoe_image_url, query2)
-        print("\n--- 📝 Comparative Analysis Report ---")
-        print(comparative_analysis)
-
-    except Exception as e:
-        print(f"\nAn error occurred during agent execution: {e}")
