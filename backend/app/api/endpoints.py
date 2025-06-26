@@ -8,8 +8,8 @@ import json
 # FastAPI will load these on startup. Check your console for initialization logs.
 from app.agents.product_research_agent import product_agent
 # Mock other agents for demonstration purposes
-from app.agents.review_analyzer_agent import review_agent
-from app.agents.budget_advisor_agent import budget_advisor
+#from app.agents.review_analyzer_agent import review_agent
+#from app.agents.budget_advisor_agent import budget_advisor
 
 # Create your FastAPI router
 router = APIRouter()
