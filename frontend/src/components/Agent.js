@@ -1,31 +1,35 @@
-/ FILE: frontend/src/components/Agent.js
-// ACTION: Ensure this component exists in your project. No changes from last time.
-
+// FILE: frontend/src/components/Agent.js
+// This is a new, reusable component for displaying each agent.
 import React from 'react';
 
+const StatusIndicator = ({ status }) => {
+  const baseClasses = "w-3 h-3 rounded-full transition-all duration-300";
+  const statusClasses = {
+    inactive: "bg-gray-300",
+    thinking: "bg-orange-400 animate-pulse",
+    complete: "bg-green-500",
+    error: "bg-red-500",
+  };
+  return <div className={`${baseClasses} ${statusClasses[status] || statusClasses.inactive}`} />;
+};
+
 const Agent = ({ name, status, output }) => {
-  const getStatusColor = () => {
-    switch (status) {
-      case 'thinking':
-        return 'bg-yellow-400 animate-pulse';
-      case 'responded':
-        return 'bg-green-500';
-      case 'inactive':
-      default:
-        return 'bg-gray-400';
-    }
+  const statusText = {
+    inactive: "Waiting for task...",
+    thinking: "Analyzing...",
+    complete: "Analysis complete.",
+    error: "An error occurred.",
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-md transition-all duration-300">
+    <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col h-full">
       <div className="flex items-center mb-2">
-        <div className={`w-3 h-3 rounded-full mr-3 ${getStatusColor()}`}></div>
-        <h3 className="text-md font-semibold text-gray-800">{name}</h3>
+        <StatusIndicator status={status} />
+        <h3 className="ml-3 text-lg font-semibold text-gray-800">{name}</h3>
       </div>
-      <div className="text-sm text-gray-600 pl-6 h-16 overflow-y-auto">
-        {status === 'thinking' && <p className="italic">Analyzing...</p>}
-        {status === 'responded' && output && <p>{output}</p>}
-        {status === 'inactive' && <p className="text-gray-400">Waiting for task...</p>}
+      <div className="text-sm text-gray-500 flex-grow">
+        <p className="italic mb-2">{statusText[status]}</p>
+        {output && <p className="text-gray-700 not-italic whitespace-pre-wrap">{output}</p>}
       </div>
     </div>
   );
